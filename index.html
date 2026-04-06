@@ -3,43 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YugiohEdle - Guess the Yu-Gi-Oh! Card</title>
+  <title>YugiohEdle</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="background-overlay"></div>
 
-  <header>
-    <h1>YugiohEdle</h1>
-    <p class="subtitle">Guess the Yu-Gi-Oh! Card</p>
-  </header>
+  <h1>YugiohEdle</h1>
 
-  <!-- Mode Selector -->
-  <div class="mode-selector">
-    <button onclick="setMode('monster')" class="mode-btn" id="btn-monster">Monster Mode</button>
-    <button onclick="setMode('card')" class="mode-btn active" id="btn-card">All Cards Mode</button>
-    <button onclick="setMode('infinite')" class="mode-btn" id="btn-infinite">Infinite Mode</button>
+  <!-- Modes -->
+  <div class="mode-container">
+    <button class="mode-btn active" onclick="setMode('card')">All Cards Mode</button>
+    <button class="mode-btn" onclick="setMode('monster')">Monster Mode</button>
+    <button class="mode-btn" onclick="setMode('infinite')">Infinite Mode</button>
   </div>
 
   <div class="input-container">
-    <p id="triesLeft">Attempts left: 10</p>
-    <input list="cardList" id="guessInput" placeholder="Type card name..." autocomplete="off">
+    <p id="triesLeft">Attempts left: </p>   <!-- ← ahora sin número fijo -->
+    <input list="cardList" id="guessInput" placeholder="Type card name...">
     <button class="main-btn" onclick="submitGuess()">Submit Guess</button>
-    <button class="main-btn secondary" onclick="startNewGame()">New Game</button>
+    <button class="main-btn secondary" onclick="confirmNewGame()">New Game</button>
   </div>
 
-  <datalist id="cardList"></datalist>
-
-  <!-- Results Table -->
-  <div id="results" class="result-table"></div>
-
-  <!-- Zoom Modal -->
-  <div id="zoomModal" class="zoom-modal hidden">
-    <div class="zoom-wrapper">
-      <img id="zoomedImage" src="" alt="Card Image">
+  <!-- Hints -->
+  <div id="hintToggleRow">
+    <div class="hint-group">
+      <button id="initialHintBtn" class="toggle-btn"><strong>Hint:</strong> Name Initial</button>
+      <span id="initialHintDisplay" class="hint-text"></span>
+    </div>
+    <div class="hint-group">
+      <button id="wordHintBtn" class="toggle-btn"><strong>Hint:</strong> Word Count</button>
+      <span id="wordHintDisplay" class="hint-text"></span>
+    </div>
+    <div class="hint-group">
+      <button id="appearanceHintBtn" class="toggle-btn"><strong>Hint:</strong> First Appearance</button>
+      <span id="appearanceHintDisplay" class="hint-text"></span>
     </div>
   </div>
 
+  <datalist id="cardList"></datalist>
+  <div id="results" class="result-table"></div>
+
+  <div id="zoomModal" class="zoom-modal hidden">
+    <div class="zoom-wrapper">
+      <img id="zoomedImage" src="" alt="">
+    </div>
+  </div>
   <footer class="credits">
     © 2026 YugiohEdle<br>
     Powered by <a href="https://db.ygoprodeck.com/" target="_blank">YGOPRODeck API</a> • 
