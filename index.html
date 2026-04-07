@@ -1,59 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YugiohEdle</title>
+  <title>Yu-Gi-Ohdle!</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="background-overlay"></div>
 
-  <h1>YugiohEdle</h1>
+  <h1>Yu-Gi-Ohdle!</h1>
 
   <!-- Modes -->
   <div class="mode-container">
-    <button class="mode-btn active" onclick="setMode('card')">All Cards Mode</button>
-    <button class="mode-btn" onclick="setMode('monster')">Monster Mode</button>
-    <button class="mode-btn" onclick="setMode('infinite')">Infinite Mode</button>
+    <button class="mode-btn" onclick="setMode('card')">All Cards</button>
+    <button class="mode-btn active" onclick="setMode('monster')">Monsters</button>
+    <button class="mode-btn" onclick="setMode('infinite')">Infinite Tries</button>
   </div>
 
   <div class="input-container">
-    <p id="triesLeft">Attempts left: </p>   <!-- ← ahora sin número fijo -->
-    <input list="cardList" id="guessInput" placeholder="Type card name...">
-    <button class="main-btn" onclick="submitGuess()">Submit Guess</button>
+    <p id="triesLeft">Attempts left: 10</p>
+    <input list="cardList" id="guessInput" placeholder="Type card name..." autocomplete="off">
+    <button class="main-btn" onclick="submitGuess()">Guess</button>
     <button class="main-btn secondary" onclick="confirmNewGame()">New Game</button>
   </div>
 
   <!-- Hints -->
-  <div id="hintToggleRow">
+  <div id="hintToggleRow" class="hint-row">
     <div class="hint-group">
-      <button id="initialHintBtn" class="toggle-btn"><strong>Hint:</strong> Name Initial</button>
+      <button id="initialHintBtn" class="toggle-btn" disabled>Hint: Initial</button>
       <span id="initialHintDisplay" class="hint-text"></span>
     </div>
     <div class="hint-group">
-      <button id="wordHintBtn" class="toggle-btn"><strong>Hint:</strong> Word Count</button>
+      <button id="wordHintBtn" class="toggle-btn" disabled>Hint: Word Count</button>
       <span id="wordHintDisplay" class="hint-text"></span>
     </div>
     <div class="hint-group">
-      <button id="appearanceHintBtn" class="toggle-btn"><strong>Hint:</strong> First Appearance</button>
+      <button id="appearanceHintBtn" class="toggle-btn" disabled>Hint: First Appearance (TCG)</button>
       <span id="appearanceHintDisplay" class="hint-text"></span>
+    </div>
+    <div class="hint-group">
+      <button id="archetypeHintBtn" class="toggle-btn" disabled>Hint: Archetype</button>
+      <span id="archetypeHintDisplay" class="hint-text"></span>
     </div>
   </div>
 
   <datalist id="cardList"></datalist>
+  <div class="result-container">
   <div id="results" class="result-table"></div>
+  </div>
 
   <div id="zoomModal" class="zoom-modal hidden">
     <div class="zoom-wrapper">
+      <button class="close-zoom" onclick="closeZoom()">×</button>
       <img id="zoomedImage" src="" alt="">
     </div>
   </div>
+
   <footer class="credits">
-    © 2026 YugiohEdle<br>
+    © 2026 Yu-Gi-Ohdle!<br>
     Powered by <a href="https://db.ygoprodeck.com/" target="_blank">YGOPRODeck API</a> • 
-    Fork of yichengxia's yugioh-guess
-    Inspired by pokemonle & Wordle
+    Inspired by pokemonle & Wordle<br>
+    Not affiliated with Konami
   </footer>
 
   <script src="script.js"></script>
