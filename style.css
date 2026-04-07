@@ -7,7 +7,7 @@
   background-image: url("other-images/wallpaper.jpg");
   background-size: cover;
   background-position: center;
-  opacity: 0.2; /* 🔍 adjust transparency here (0 = fully transparent, 1 = fully visible) */
+  opacity: 0.3;
   z-index: -1;
 }
 
@@ -18,8 +18,8 @@ body {
   min-height: 100vh;
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f8f9fa; /* light background */
-  overflow: hidden; /* Disable scroll */
+  background-color: #f8f9fa;
+  overflow: hidden;
   height: 100%;
   position: fixed;
   width: 100%;
@@ -27,133 +27,127 @@ body {
 
 html {
   overscroll-behavior: none;
-  overflow: hidden; /* Disable scroll */
+  overflow: hidden;
   height: 100%;
   position: fixed;
   width: 100%;
 }
 
-h1 {
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  color: #343a40; /* dark text */
-}
+h1 { text-align: center; margin: 20px 0 10px; color: #343a40; }
 
-.input-container {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: 0px 0;
+.mode-container { text-align: center; margin: 10px 0 15px; }
+.mode-btn {
+  padding: 8px 16px; margin: 0 5px; border-radius: 20px; border: 2px solid #007bff;
+  background: white; color: #007bff; cursor: pointer;
 }
+.mode-btn.active { background: #007bff; color: white; }
 
-/* Fancy input field */
+.input-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+
 #guessInput {
-  width: 300px;
-  padding: 10px 14px;
-  font-size: 16px;
-  border-radius: 24px;
-  border: 2px solid #007bff;
-  outline: none;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
-  transition: border-color 0.3s, box-shadow 0.3s;
+  width: 320px; padding: 12px; font-size: 16px; border-radius: 25px;
+  border: 2px solid #007bff; outline: none;
 }
 
-#guessInput:focus {
-  border-color: #0056b3;
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
-}
-
-/* Common button base */
-button {
-  padding: 10px 18px;
-  font-size: 16px;
-  border-radius: 24px;
-  cursor: pointer;
-  margin: 8px 6px;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  border: none;
-}
-
-/* Submit Guess button: primary color */
 .main-btn {
-  background-color: #007bff;
-  color: white;
-  padding: 6px 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 24px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  padding: 12px 20px; font-size: 16px; border-radius: 25px; cursor: pointer;
+  background: #007bff; color: white; border: none;
+}
+.main-btn.secondary { background: #6c757d; }
+
+.result-container {
+  width: 82% !important;
+  max-width: 85% !important;
+  margin: 30px auto !important;
+  padding: 30px !important;
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
 }
 
-.main-btn:hover {
-  background-color: #0056b3;
-}
-
-/* New Game button: lighter style */
-button:nth-of-type(2) {
-  background-color: #e2e6ea;
-  color: #333;
-}
-
-button:nth-of-type(2):hover {
-  background-color: #d6d8db;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 10px rgba(0,0,0,0.12);
+.result-table {
+  width: 100% !important;
+  overflow-x: auto;
 }
 
 .result-row {
   display: grid;
-  grid-template-columns:
-    minmax(160px, 2.5fr)  /* CardName */
-    repeat(3, minmax(80px, 1fr)) /* CardType, Attribute, Property */
-    minmax(120px, 2fr) /* Types */
-    repeat(5, minmax(40px, 1fr)) /* Level, ATK, DEF, Link, Pendulum */
-  ;
-  gap: 6px;
-  margin-top: 6px;
-  margin-left: 40px;
-  margin-right: 40px;
+  grid-template-columns: 25% 13% 8% 6% 6% 6% 5% 5% 5% 5% 8% 8%;
+  gap: 0px;
+  margin-bottom: 8px;
+  width: 100% !important;
+  min-width: 100% !important;
+  background-color: #0f0f0f;
+  border-radius: 2px;
+  overflow: hidden;
 }
 
-.correct-row {
-  border: 2px solid #28a745; /* green border */
-  border-radius: 6px;
-  padding: 1px;
+.result-row.header {
+  background-color: #111111;
+  color: white;
+  font-size: 22px !important;
+  font-weight: bold;
+  width: 100% !important;
+  min-width: 100% !important;
 }
 
 .field {
-  display: flex;               /* make it a flex box */
-  align-items: center;         /* vertical center */
-  padding: 3px 5px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 12.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: 12px 8px;
+  font-size: 16px;
+  font-weight: bold !important;
+  color: #eeeeee;
+  background-color: #1f1f1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
 }
 
+.result-row .field:first-child {
+  justify-content: flex-start;
+  padding-left: 14px;
+  background-color: #1f1f1f;
+}
+
+.result-row.header .field:first-child {
+  justify-content: center;
+  padding-left: 0;
+}
+
+.field {
+  display: flex; align-items: center; justify-content: center;
+  padding: 6px 4px; border-radius: 4px; border: 1px solid #ccc;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .correct {
-  background-color: #d4edda;
-  color: #155724;
-  border-color: #c3e6cb;
+  background-color: #1e4d2b !important;
+  color: #90ee90 !important;
+  border-color: #2e7d32;
 }
 
 .incorrect {
-  background-color: #f5b5b5;    /* darker red-pink */
-  color: #721c24;
-  border-color: #f1a1a1;
+  background-color: #4d1f1f !important;
+  color: #ff8a8a !important;
+  border-color: #7f2a2a;
 }
 
 .card-thumbnail {
-  height: 32px;
+  height: 58px;
+  border-radius: 6px;
   cursor: zoom-in;
-  border: 1px solid #aaa;
-  border-radius: 4px;
+  margin-right: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
+
+.correct-row {
+  border: 3px solid #4ade80;
+  border-radius: 8px;
+  background-color: #1a3a22;
+}
+
+.hint-group { display: inline-flex; align-items: center; gap: 8px; margin: 8px; }
+.toggle-btn { padding: 4px 10px; font-size: 13px; border-radius: 8px; background: #eee; cursor: pointer; }
+.toggle-btn.active { background: #28a745; color: white; }
 
 .zoom-modal {
   position: fixed;
@@ -161,82 +155,100 @@ button:nth-of-type(2):hover {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.9);
+  background: rgba(0, 0, 0, 0.95);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.zoom-modal.hidden {
+  display: none;
+}
+
+.zoom-wrapper {
+  position: relative;
+  max-width: 94%;
+  max-height: 94vh;
+  padding: 20px;
+  background: #0a0a0a;
+  border-radius: 16px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9);
+  border: 3px solid #222;
+}
+
+.close-zoom {
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  width: 46px;
+  height: 46px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.7);
+  z-index: 10001;
 }
 
-.zoom-wrapper img {
-  max-width: 90%;
-  max-height: 90%;
-  object-fit: contain;
-  cursor: default; /* no pointer on image */
+.close-zoom:hover {
+  background: #c0392b;
+  transform: scale(1.15);
 }
 
-.hidden {
-  display: none;
+#zoomedImage {
+  max-width: 100%;
+  max-height: 88vh;
+  border-radius: 12px;
+  display: block;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
 }
 
 .credits {
   position: fixed;
-  bottom: 10px;
+  bottom: 0;
   left: 0;
   width: 100%;
+  background: #0a2540;
+  color: #ddd;
   text-align: center;
-  font-size: 12px;
-  color: #555;
-  background-color: rgba(255, 255, 255, 0.7); /* optional translucent bg */
-  padding: 6px 0;
-  z-index: 10;
+  padding: 16px 0;
+  font-size: 13px;
+  z-index: 50;
+  border-top: 2px solid #1e3a5f;
 }
 
 .credits a {
-  color: #007bff;
+  color: #4da6ff;
   text-decoration: none;
-  margin: 0 1px;
 }
 
 .credits a:hover {
-  text-decoration: underline;
+  color: #80c1ff;
 }
 
-#hintToggleRow {
+.hint-row {
+  text-align: center;
+  margin: 15px 0;
   display: flex;
-  align-items: center;
-  justify-content: left;
-  gap: 16px;
-  margin-left: 40px;
-  font-size: 12px;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
 }
 
-.hint-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.toggle-btn {
-  padding: 4px 8px;
-  font-size: 12px;
-  border: 1px solid #aaa;
-  border-radius: 10px;
-  background-color: #eee;
-  color: #333;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.toggle-btn.active {
-  background-color: #28a745;   /* Light green */
-  color: #fff;
-  border-color: #28a745;
+.hint-group button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .hint-text {
-  font-size: 11px;
-  color: #333;
-  font-style: italic;
+  font-weight: bold;
+  color: #28a745;
+  min-width: 80px;
 }
