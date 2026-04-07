@@ -1,55 +1,28 @@
 // ====================================================
-// YugiohEdle - By LyraNova
-//
-// Credits:
-// - YGOPRODeck API
-// - Inspired by pokemonle and yichengxia's yugioh-guess
+// YugiohEdle - Versión completa y funcional
 // ====================================================
 
 const MAX_TRIES = 10;
 let allCards = [];
 let answer = null;
 let tries = 0;
-let currentMode = 'card';   // 'monster' | 'card' | 'infinite'
+let currentMode = 'card';
 
-// ====================================================
-// Fields Configuration
-// ====================================================
+const DISPLAY_FIELDS = ["name", "archetype", "type", "attribute", "race", "level", "atk", "def", "linkval", "scale", "tcg_date", "ocg_date"];
+const FIELDS_TO_CHECK = ["archetype", "type", "attribute", "race", "level", "atk", "def", "linkval", "scale", "tcg_date", "ocg_date"];
 
-const DISPLAY_FIELDS = [
-  "name", "archetype", "type", "attribute", "race",
-  "level", "atk", "def", "linkval", "scale"
-];
-
-const FIELDS_TO_CHECK = [
-  "archetype", "type", "attribute", "race",
-  "level", "atk", "def", "linkval", "scale"
-];
-
-// ====================================================
-// Loader
-// ====================================================
-
+// ====================== LOADER ======================
 function showLoader() {
   let loader = document.getElementById('loader');
   if (!loader) {
     loader = document.createElement('div');
     loader.id = 'loader';
-    loader.style.cssText = `
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9); display: flex; align-items: center;
-      justify-content: center; flex-direction: column; color: white;
-      font-size: 1.6rem; z-index: 9999; text-align: center;
-    `;
+    loader.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;font-size:1.6rem;z-index:9999;text-align:center;`;
     loader.innerHTML = `
-      <div style="border: 8px solid #333; border-top: 8px solid #ffd700; 
-                  border-radius: 50%; width: 70px; height: 70px; 
-                  animation: spin 1s linear infinite; margin-bottom: 25px;"></div>
+      <div style="border:8px solid #333;border-top:8px solid #ffd700;border-radius:50%;width:70px;height:70px;animation:spin 1s linear infinite;margin-bottom:25px;"></div>
       <div>Loading all Yu-Gi-Oh cards...</div>
-      <div style="margin-top: 12px; font-size: 1.1rem;">This may take a few seconds on first load</div>
     `;
     document.body.appendChild(loader);
-
     const style = document.createElement('style');
     style.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
     document.head.appendChild(style);
@@ -62,155 +35,148 @@ function hideLoader() {
   if (loader) loader.style.display = 'none';
 }
 
-// ====================================================
-// Load Cards from API
-// ====================================================
-
+// ====================== LOAD CARDS ======================
 async function loadAllCards() {
   showLoader();
-
   try {
-    const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php');
-    if (!response.ok) throw new Error('API connection error');
-
+    const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes');
     const data = await response.json();
     allCards = data.data || [];
-
-    console.log(`✅ ${allCards.length} cards successfully loaded from YGOPRODeck API`);
-
+    console.log(`✅ ${allCards.length} cards loaded`);
     hideLoader();
     populateDatalist();
     startNewGame();
-
   } catch (error) {
     hideLoader();
     console.error(error);
-    alert('Failed to load cards. Please check your internet connection and try again.');
+    alert('Failed to load cards. Make sure you are using GitHub Pages.');
   }
 }
 
-// ====================================================
-// Get card pool based on current mode
-// ====================================================
-
+// ====================== MODE & GAME ======================
 function getCurrentPool() {
   if (currentMode === 'monster') {
-    return allCards.filter(card => card.type && card.type.toLowerCase().includes('monster'));
+    return allCards.filter(c => c.type && c.type.toLowerCase().includes('monster'));
   }
-  return allCards; // 'card' or 'infinite'
+  return allCards;
 }
 
 function pickRandomCard() {
   const pool = getCurrentPool();
-  if (pool.length === 0) return null;
   return pool[Math.floor(Math.random() * pool.length)];
 }
-
-// ====================================================
-// Start New Game
-// ====================================================
 
 function startNewGame() {
   tries = 0;
   answer = pickRandomCard();
-
-  if (!answer) {
-    alert("No cards available in this mode.");
-    return;
-  }
-
-  const results = document.getElementById('results');
-  results.innerHTML = '';
+  document.getElementById('results').innerHTML = '';
   createTableHeader();
-
   updateTriesLeft();
   document.getElementById('guessInput').value = '';
-
-  console.log("Secret card:", answer.name);
+  resetHints();
 }
 
-// ====================================================
-// Autocomplete (Datalist)
-// ====================================================
+// ====================== HINTS ======================
+function resetHints() {
+  document.getElementById('initialHintDisplay').textContent = '';
+  document.getElementById('wordHintDisplay').textContent = '';
+  document.getElementById('appearanceHintDisplay').textContent = '';
+  document.getElementById('archetypeHintDisplay').textContent = '';
 
+  document.getElementById('initialHintBtn').disabled = false;
+  document.getElementById('wordHintBtn').disabled = true;
+  document.getElementById('appearanceHintBtn').disabled = true;
+  document.getElementById('archetypeHintBtn').disabled = true;
+}
+
+function updateHintAvailability() {
+  document.getElementById('initialHintBtn').disabled = false;
+  if (tries >= 3) document.getElementById('wordHintBtn').disabled = false;
+  if (tries >= 5) document.getElementById('appearanceHintBtn').disabled = false;
+  if (tries >= MAX_TRIES - 1) document.getElementById('archetypeHintBtn').disabled = false;
+}
+
+function setupHintButtons() {
+  document.getElementById('initialHintBtn').onclick = () => {
+    document.getElementById('initialHintDisplay').textContent = answer.name[0].toUpperCase();
+  };
+  document.getElementById('wordHintBtn').onclick = () => {
+    const count = answer.name.trim().split(/\s+/).length;
+    document.getElementById('wordHintDisplay').textContent = count + " words";
+  };
+  document.getElementById('appearanceHintBtn').onclick = () => {
+    const misc = answer.misc_info?.[0];
+    let date = "Unknown";
+    if (misc?.tcg_date) date = misc.tcg_date;
+    document.getElementById('appearanceHintDisplay').textContent = date;
+  };
+  document.getElementById('archetypeHintBtn').onclick = () => {
+    document.getElementById('archetypeHintDisplay').textContent = answer.archetype || "No Archetype";
+  };
+}
+
+// ====================== AUTOCOMPLETE (Needs update) ======================
 function populateDatalist() {
   const datalist = document.getElementById('cardList');
-  if (!datalist) return;
   datalist.innerHTML = '';
 
   allCards.forEach(card => {
     const option = document.createElement('option');
     option.value = card.name;
+    
+    // Guardamos la URL de la imagen para usarla después
+    if (card.card_images && card.card_images[0]) {
+      option.dataset.image = card.card_images[0].image_url;
+    }
+    
     datalist.appendChild(option);
   });
 }
 
-// ====================================================
-// Create Table Header
-// ====================================================
-
+// ====================== TABLE HEADER ======================
 function createTableHeader() {
   const header = document.createElement('div');
   header.className = 'result-row header';
-
   DISPLAY_FIELDS.forEach(field => {
     const span = document.createElement('span');
     span.className = 'field';
     span.style.fontWeight = 'bold';
-
     let title = field.charAt(0).toUpperCase() + field.slice(1);
     if (field === 'linkval') title = 'Link';
     if (field === 'scale') title = 'Pendulum';
     if (field === 'name') title = 'Card';
-
+    if (field === 'tcg_date') title = 'TCG Date';
+    if (field === 'ocg_date') title = 'OCG Date';
     span.textContent = title;
     header.appendChild(span);
   });
-
   document.getElementById('results').appendChild(header);
 }
 
-// ====================================================
-// Submit Guess
-// ====================================================
-
+// ====================== SUBMIT & DISPLAY ======================
 function submitGuess() {
   if (tries >= MAX_TRIES && currentMode !== 'infinite') return;
-
-  const input = document.getElementById('guessInput');
-  const guessName = input.value.trim();
-
+  const guessName = document.getElementById('guessInput').value.trim();
   if (!guessName) return;
-
   const guessedCard = allCards.find(c => c.name.toLowerCase() === guessName.toLowerCase());
-
-  if (!guessedCard) {
-    alert("Card not found. Please type the exact name.");
-    return;
-  }
+  if (!guessedCard) { alert("Card not found."); return; }
 
   displayResult(guessedCard);
   tries++;
   updateTriesLeft();
+  updateHintAvailability();
 
   const isWin = guessedCard.name === answer.name;
-
   if (isWin || (tries >= MAX_TRIES && currentMode !== 'infinite')) {
-    if (isWin) {
-      alert("🎉 Congratulations! You guessed the card correctly.");
-    } else {
-      alert(`❌ No more attempts left.\nThe card was: ${answer.name}`);
+    if (isWin) alert("🎉 Congratulations! You guessed the card.");
+    else {
+      alert(`❌ Game Over.\nThe card was: ${answer.name}`);
       displayResult(answer);
     }
     if (!isWin) tries = MAX_TRIES;
   }
-
-  input.value = '';
+  document.getElementById('guessInput').value = '';
 }
-
-// ====================================================
-// Display Result Row
-// ====================================================
 
 function displayResult(guess) {
   const row = document.createElement('div');
@@ -221,96 +187,152 @@ function displayResult(guess) {
     const span = document.createElement('span');
     span.className = 'field';
 
-    let value = (guess[field] !== undefined && guess[field] !== null) ? guess[field] : '-';
+    let value = '-';
+    if (field === 'tcg_date' || field === 'ocg_date') {
+      const misc = guess.misc_info?.[0];
+      value = (field === 'tcg_date' ? misc?.tcg_date : misc?.ocg_date) || '-';
+    } else {
+      value = guess[field] ?? '-';
+    }
 
-    // Card Name + Image
     if (field === 'name') {
-      const imgUrl = guess.card_images && guess.card_images[0] 
-        ? guess.card_images[0].image_url 
-        : 'https://db.ygoprodeck.com/card-back.jpg';
-
+      const imgUrl = guess.card_images?.[0]?.image_url || 'https://db.ygoprodeck.com/card-back.jpg';
       span.innerHTML = `
-        <img src="${imgUrl}" class="card-thumbnail" alt="${value}" 
-             style="height:65px; vertical-align:middle; margin-right:10px; border-radius:4px;">
+        <img src="${imgUrl}" 
+             class="card-thumbnail" 
+             onclick="zoomImage(this.src)" 
+             style="height:58px; margin-right:8px; border-radius:4px; cursor:zoom-in;">
         ${value}
       `;
       span.style.display = 'flex';
       span.style.alignItems = 'center';
-    } 
-    else {
+    } else if (field === 'attribute') {
+      span.innerHTML = getAttributeIcon(value);
+    } else {
       span.textContent = value;
     }
 
-    // Coloring + Higher / Lower arrows
     if (FIELDS_TO_CHECK.includes(field)) {
-      let correctValue = answer[field];
-      if (correctValue === null || correctValue === undefined) correctValue = '-';
+      let correctVal = '-';
+      if (field === 'tcg_date' || field === 'ocg_date') {
+        const misc = answer.misc_info?.[0];
+        correctVal = (field === 'tcg_date' ? misc?.tcg_date : misc?.ocg_date) || '-';
+      } else {
+        correctVal = answer[field] ?? '-';
+      }
 
-      const val1 = parseFloat(value);
-      const val2 = parseFloat(correctValue);
-
-      if (value == correctValue || (isNaN(val1) && isNaN(val2))) {
+      if (String(value).toLowerCase() === String(correctVal).toLowerCase()) {
         span.classList.add('correct');
       } else {
         span.classList.add('incorrect');
 
-        // Higher/Lower arrows for numeric fields
-        if (["atk", "def", "level", "linkval", "scale"].includes(field)) {
-          if (!isNaN(val1) && !isNaN(val2) && val1 !== val2) {
+        if (["tcg_date", "ocg_date"].includes(field)) {
+          const v1 = parseInt(String(value).substring(0,4));
+          const v2 = parseInt(String(correctVal).substring(0,4));
+          if (!isNaN(v1) && !isNaN(v2) && v1 !== v2) {
             const arrow = document.createElement('span');
-            arrow.style.marginLeft = '8px';
+            arrow.textContent = v1 < v2 ? ' ↑' : ' ↓';
             arrow.style.fontWeight = 'bold';
-            arrow.style.fontSize = '1.1em';
-            arrow.textContent = val1 < val2 ? '↑' : '↓';
+            span.appendChild(arrow);
+          }
+        } else if (["atk","def","level","linkval","scale"].includes(field)) {
+          const v1 = parseFloat(value);
+          const v2 = parseFloat(correctVal);
+          if (!isNaN(v1) && !isNaN(v2) && v1 !== v2) {
+            const arrow = document.createElement('span');
+            arrow.textContent = v1 < v2 ? ' ↑' : ' ↓';
+            arrow.style.fontWeight = 'bold';
             span.appendChild(arrow);
           }
         }
       }
     }
-
     row.appendChild(span);
   });
-
   document.getElementById('results').appendChild(row);
 }
 
-// ====================================================
-// Update Tries Display
-// ====================================================
+function getAttributeIcon(attr) {
+  const map = {
+    'EARTH': 'icons/attribute/attribute_icon_earth.png',
+    'FIRE': 'icons/attribute/attribute_icon_fire.png',
+    'WATER': 'icons/attribute/attribute_icon_water.png',
+    'WIND': 'icons/attribute/attribute_icon_wind.png',
+    'LIGHT': 'icons/attribute/attribute_icon_light.png',
+    'DARK': 'icons/attribute/attribute_icon_dark.png',
+    'DIVINE': 'icons/attribute/attribute_icon_divine.png'
+  };
+  const src = map[attr?.toUpperCase()] || '';
+  return src ? `<img src="${src}" style="height:32px;" alt="${attr}">` : attr;
+}
+
+// ====================== ZOOM ======================
+function zoomImage(src) {
+  const modal = document.getElementById('zoomModal');
+  const zoomedImg = document.getElementById('zoomedImage');
+  
+  zoomedImg.src = src;
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+
+  // Cerrar con la X
+  const closeBtn = modal.querySelector('.close-zoom');
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    };
+  }
+
+  // Cerrar haciendo clic fuera de la carta (en el fondo oscuro)
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+  };
+
+  // Cerrar con tecla ESC
+  const escHandler = (e) => {
+    if (e.key === "Escape") {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      document.removeEventListener('keydown', escHandler);
+    }
+  };
+  document.addEventListener('keydown', escHandler);
+}
 
 function updateTriesLeft() {
-  const triesEl = document.getElementById('triesLeft');
-  if (!triesEl) return;
-
+  const el = document.getElementById('triesLeft');
   if (currentMode === 'infinite') {
-    triesEl.textContent = 'Infinite Mode — Unlimited attempts';
+    el.textContent = 'Infinite Mode — Unlimited attempts';
   } else {
-    const left = MAX_TRIES - tries;
-    triesEl.textContent = `Attempts left: ${left}`;
+    el.textContent = `Attempts left: ${MAX_TRIES - tries}`;
   }
 }
 
-// ====================================================
-// Change Mode
-// ====================================================
-
-function setMode(newMode) {
-  currentMode = newMode;
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`button[onclick="setMode('${mode}')"]`).classList.add('active');
   startNewGame();
 }
 
-// ====================================================
-// Initialization
-// ====================================================
+function confirmNewGame() {
+  if (confirm("Start a new game?")) startNewGame();
+}
 
+// ====================== INIT ======================
 window.onload = () => {
   loadAllCards();
 
-  // Enter key support
-  const guessInput = document.getElementById('guessInput');
-  if (guessInput) {
-    guessInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') submitGuess();
-    });
-  }
+  const input = document.getElementById('guessInput');
+  input.addEventListener('keypress', e => { if (e.key === 'Enter') submitGuess(); });
+
+  setupHintButtons();
+
+  document.getElementById('zoomModal').addEventListener('click', e => {
+    if (e.target.id === 'zoomModal') e.target.classList.add('hidden');
+  });
 };
